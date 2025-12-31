@@ -7,22 +7,19 @@ const TAROT_CARDS = [
   {
     id: 0,
     name: "The Sovereign",
-    icon: "👑",
-    desc: "25 is your year of authority. You will stop asking for permission and start building your empire. A career pivot in Q3 will define your next decade.",
+    desc: "25 is your year, now that your frontal lobe is fully developed you can make better and more informed decisions. I forsee a year of you pivoting your life in a good direction based on the good decisions you will make.",
     color: "from-purple-500 to-indigo-600"
   },
   {
     id: 1,
     name: "The Alchemist",
-    icon: "✨",
-    desc: "Transformation is inevitable. You will turn a long-standing source of chaos into your greatest strength. Watch for a serendipitous connection in May.",
+    desc: "Your transformation is inevitable. A more serendipitous year coming ahead, keep sending in those job applications, your dream job is looking your way.",
     color: "from-emerald-500 to-teal-600"
   },
   {
     id: 2,
     name: "The Navigator",
-    icon: "🧭",
-    desc: "New horizons. You will find peace in a place you haven't visited yet. Trust your compass; the path isn't straight, but the destination is magnificent.",
+    desc: "New horizons. You will find peace in a place you'll be visiting this year. Trust your compass; the path isn't straight, but the destination is magnificent.",
     color: "from-amber-500 to-orange-600"
   }
 ];
