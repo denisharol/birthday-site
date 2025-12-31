@@ -1,7 +1,14 @@
 "use client";
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-export default function FinalVideo({ onNext }) {
+export default function FinalVideo({ onNext, muteBackground }) {
+  
+  // Mute background music automatically when this page loads
+  useEffect(() => {
+    if (muteBackground) muteBackground();
+  }, [muteBackground]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-12 px-6">
       <div className="text-center space-y-4">
@@ -9,7 +16,6 @@ export default function FinalVideo({ onNext }) {
         <p className="text-[10px] uppercase tracking-[0.5em] text-zinc-400">A special message for you</p>
       </div>
 
-      {/* Resized to match YouTube player (max-w-3xl aspect-video) */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, Volume2, VolumeX } from 'lucide-react';
 
 // Component Imports
-import SplashScreen from '@/components/SplashScreen'; // Import the new component
+import SplashScreen from '@/components/SplashScreen';
 import AgeGate from '@/components/AgeGate';
 import MemeReveal from '@/components/MemeReveal';
 import BirthdayReveal from '@/components/BirthdayReveal';
@@ -23,10 +23,13 @@ import FinalVideo from '@/components/FinalVideo';
 import Summary from '@/components/Summary';
 
 export default function BirthdaySite() {
-  // Start at Step 0 for the Splash Screen
   const [step, setStep] = useState(0);
   const [isDark, setIsDark] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  
+  // NEW: Track if a video is playing on screen
+  const [isExternalPlaying, setIsExternalPlaying] = useState(false);
+  
   const [showMessage, setShowMessage] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   
@@ -38,16 +41,21 @@ export default function BirthdaySite() {
     restaurant: null
   });
 
-  // Audio Logic: Only play if NOT in Splash Screen (step > 0) AND not muted
+  // NEW: Reset external playing state whenever we change steps
+  useEffect(() => {
+    setIsExternalPlaying(false);
+  }, [step]);
+
+  // Updated Audio Logic: Pause if Splash(0), Muted, or External Video is Playing
   useEffect(() => {
     if (audioRef.current) {
-      if (step === 0 || isMuted) {
+      if (step === 0 || isMuted || isExternalPlaying) {
         audioRef.current.pause();
       } else {
         audioRef.current.play().catch(err => console.log("Playback interaction required."));
       }
     }
-  }, [isMuted, step]);
+  }, [isMuted, step, isExternalPlaying]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -58,7 +66,6 @@ export default function BirthdaySite() {
   return (
     <div className={`${isDark ? 'bg-zinc-950 text-white' : 'bg-white text-zinc-900'} min-h-screen transition-colors duration-700 font-sans selection:bg-zinc-500 selection:text-white`}>
       
-      {/* Audio: Only plays when step > 0 */}
       <audio 
         ref={audioRef}
         src="/audio/birthday-song.mp3" 
@@ -66,7 +73,6 @@ export default function BirthdaySite() {
         preload="auto"
       />
 
-      {/* Header: Hidden during Splash Screen */}
       {step > 0 && (
         <header className="fixed top-0 w-full p-8 flex justify-between items-end z-50 mix-blend-difference text-white">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -103,7 +109,6 @@ export default function BirthdaySite() {
         </header>
       )}
 
-      {/* Page Transitions */}
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
@@ -113,16 +118,16 @@ export default function BirthdaySite() {
           transition={{ duration: 0.8 }}
           className={step === 0 ? "w-full h-screen" : "pt-40 pb-20 px-6 max-w-6xl mx-auto"}
         >
-          {/* Step 0: Splash Screen */}
           {step === 0 && <SplashScreen onComplete={() => setStep(1)} />}
-
-          {/* Regular Steps */}
           {step === 1 && <AgeGate onNext={() => setStep(2)} />}
           {step === 2 && <MemeReveal onNext={() => setStep(3)} />}
           {step === 3 && <BirthdayReveal onNext={() => setStep(4)} />} 
           {step === 4 && <PhotoStack onNext={() => setStep(5)} />}
           {step === 5 && <Achievements onNext={() => setStep(6)} />}
-          {step === 6 && <SongPage onNext={() => setStep(7)} />}
+          
+          {/* Step 6: SongPage - Pass the mute handler */}
+          {step === 6 && <SongPage onNext={() => setStep(7)} muteBackground={() => setIsExternalPlaying(true)} />}
+          
           {step === 7 && <Oracle onNext={() => setStep(8)} />}
           {step === 8 && <SpotDifference onNext={() => setStep(9)} />}
           
@@ -135,7 +140,6 @@ export default function BirthdaySite() {
               onLose={() => setStep(11)} 
             />
           )}
-          
           {step === 10 && (
             <BonusPresent 
               onSelect={(extra) => {
@@ -144,9 +148,7 @@ export default function BirthdaySite() {
               }} 
             />
           )}
-
           {step === 11 && <Disappointment onNext={() => setStep(12)} />}
-          
           {step === 12 && (
             <RestaurantSelector onSelect={(res) => { 
               setSelections(prev => ({ ...prev, restaurant: res.name }));
@@ -154,15 +156,17 @@ export default function BirthdaySite() {
               setStep(13); 
             }} />
           )}
-          
           {step === 13 && <RestaurantDetails restaurant={selectedRestaurant} onBack={() => setStep(12)} onConfirm={() => setStep(14)} />}
           {step === 14 && <MenuViewer restaurant={selectedRestaurant} onNext={() => setStep(15)} />}
-          {step === 15 && <FinalVideo onNext={() => setStep(16)} />}
+          
+          {/* Step 15: FinalVideo - Pass the mute handler */}
+          {step === 15 && <FinalVideo onNext={() => setStep(16)} muteBackground={() => setIsExternalPlaying(true)} />}
+          
           {step === 16 && (
             <Summary 
               selections={selections} 
               onReset={() => {
-                setStep(1); // Goes back to AgeGate, not Splash
+                setStep(1);
                 setSelections({ gift: null, bonus: null, restaurant: null });
                 setIsMuted(true);
               }} 

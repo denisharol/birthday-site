@@ -20,7 +20,7 @@ export default function SpotDifference({ onNext }) {
             className="flex flex-col items-center space-y-12 w-full"
           >
             <div className="text-center space-y-4">
-              <h2 className="text-6xl font-serif italic tracking-tighter">Spot the Difference</h2>
+              <h2 className="text-6xl font-serif italic tracking-tighter">Which Picture Looks Better?</h2>
               <p className="text-[10px] uppercase tracking-widest text-zinc-400">
                 Click the picture that looks better
               </p>
